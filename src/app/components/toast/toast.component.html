@@ -1,0 +1,31 @@
+<div class="toast-container">
+  <div
+    *ngFor="let toast of toasts"
+    [class]="getToastClass(toast.type)"
+    (click)="removeToast(toast)"
+    (keydown.enter)="removeToast(toast)"
+    (keydown.space)="removeToast(toast)"
+    tabindex="0"
+    role="button"
+  >
+    <div
+      class="toast"
+      (click)="hide()"
+      (keydown.enter)="hide()"
+      tabindex="0"
+      role="button"
+    >
+      <div class="toast-content">
+        <span class="toast-icon">
+          <ng-container [ngSwitch]="toast.type">
+            <span *ngSwitchCase="'success'">✓</span>
+            <span *ngSwitchCase="'error'">✕</span>
+            <span *ngSwitchCase="'warning'">!</span>
+            <span *ngSwitchCase="'info'">i</span>
+          </ng-container>
+        </span>
+        <span class="toast-message">{{ toast.message }}</span>
+      </div>
+    </div>
+  </div>
+</div>

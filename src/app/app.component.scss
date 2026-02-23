@@ -1,0 +1,344 @@
+// === Shared / Layout Styles ===
+
+.box {
+  position: relative;
+  top: 0;
+  opacity: 1;
+  float: left;
+  padding: 40px 50px 40px 50px;
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  transform: scale(1);
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  z-index: 5;
+
+  &.back {
+    transform: scale(0.95);
+    -webkit-transform: scale(0.95);
+    -ms-transform: scale(0.95);
+    top: -20px;
+    opacity: 0.8;
+    z-index: -1;
+  }
+
+  &:before {
+    content: "";
+    width: 100%;
+    height: 30px;
+    border-radius: 10px;
+    position: absolute;
+    top: -10px;
+    background: rgba(255, 255, 255, 0.6);
+    left: 0;
+    transform: scale(0.95);
+    -webkit-transform: scale(0.95);
+    -ms-transform: scale(0.95);
+    z-index: -1;
+  }
+}
+
+.material-button,
+.alt-2,
+.material-button .shape,
+.alt-2 .shape,
+.box {
+  transition: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  -ms-transition: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Flip container and animation
+.flip-container {
+  perspective: 1000px;
+  width: 100%;
+  height: 550px;
+  min-height: 550px;
+
+  touch-action: pan-x pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
+  &:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+.flip-container.flipped .front {
+  transform: rotateY(-180deg);
+}
+
+.flip-container.flipped .back {
+  transform: rotateY(0deg);
+}
+
+.box.front,
+.box.back {
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.box.front {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.box.back {
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+.box.loading {
+  pointer-events: none;
+
+  input {
+    opacity: 0.5;
+  }
+}
+
+.materialContainer {
+  width: 95%;
+  max-width: 460px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+
+// === Header Controls ===
+
+.header-controls {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1001;
+}
+
+.theme-toggle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.language-toggle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  padding: 0;
+  overflow: hidden;
+
+  img {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Connectivity indicator
+.connectivity-indicator {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(76, 175, 80, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  cursor: help;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .wifi-icon {
+    filter: hue-rotate(0deg);
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &.offline {
+    border-color: rgba(244, 67, 54, 0.5);
+    background: rgba(244, 67, 54, 0.1);
+
+    .wifi-icon {
+      filter: hue-rotate(0deg) brightness(0.8);
+    }
+  }
+
+  &.using-defaults {
+    border-color: rgba(255, 152, 0, 0.5);
+    background: rgba(255, 152, 0, 0.1);
+    animation: pulse-warning 2s infinite;
+
+    .wifi-icon {
+      filter: hue-rotate(30deg);
+    }
+  }
+}
+
+@keyframes pulse-warning {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+// === Dark Mode Styles ===
+
+body.dark-mode .theme-toggle,
+body.dark-mode .language-toggle {
+  background: rgba(45, 45, 45, 0.9);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+}
+
+body.dark-mode {
+  .header-controls {
+    .connectivity-indicator {
+      background: rgba(45, 45, 45, 0.9);
+      border-color: rgba(76, 175, 80, 0.4);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+      &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      }
+
+      &.offline {
+        border-color: rgba(244, 67, 54, 0.6);
+        background: rgba(244, 67, 54, 0.15);
+      }
+
+      &.using-defaults {
+        border-color: rgba(255, 152, 0, 0.6);
+        background: rgba(255, 152, 0, 0.15);
+      }
+    }
+
+    .theme-toggle,
+    .language-toggle {
+      background: rgba(45, 45, 45, 0.9);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+
+      &:hover {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      }
+    }
+  }
+}
+
+// === Lucide Icons ===
+
+lucide-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// === Accessibility ===
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .box {
+    border: 2px solid currentColor;
+  }
+
+  button {
+    border-width: 2px;
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.footer span.disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}

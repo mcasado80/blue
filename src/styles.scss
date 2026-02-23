@@ -1,0 +1,220 @@
+body {
+  background-image: url(https://lh4.googleusercontent.com/-XplyTa1Za-I/VMSgIyAYkHI/AAAAAAAADxM/oL-rD6VP4ts/w1184-h666/Android-Lollipop-wallpapers-Google-Now-Wallpaper-2.png);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  font-family: "Roboto", sans-serif;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+html {
+  overflow: hidden;
+}
+
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  list-style-type: none;
+  outline: none;
+
+  &:after,
+  &::before {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    list-style-type: none;
+    outline: none;
+  }
+}
+
+// Dark mode global styles
+body.dark-mode {
+  background-image: url("/assets/darkbg.png");
+  background-color: #121212;
+
+  // Box styling
+  .materialContainer .box {
+    background: #1e1e1e !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+
+    &:before {
+      background: rgba(30, 30, 30, 0.6) !important;
+    }
+  }
+
+  // Input styling - same color for inputs and labels
+  .input {
+    input {
+      color: #e0e0e0 !important;
+      background: transparent !important;
+    }
+
+    label {
+      color: #e0e0e0 !important;
+    }
+
+    &:before {
+      background: rgba(255, 255, 255, 0.1) !important;
+    }
+  }
+
+  // Button styling with maximum specificity
+  .button {
+    &.clear button {
+      background-color: #2d2d2d !important;
+      border: 3px solid rgba(255, 255, 255, 0.1) !important;
+      color: #e0e0e0 !important;
+
+      &:hover {
+        background-color: #3d3d3d !important;
+        color: #ed2553 !important;
+        border-color: #ed2553 !important;
+      }
+    }
+
+    &.convert button {
+      background-color: #2d2d2d !important;
+      border: 3px solid rgba(255, 255, 255, 0.1) !important;
+      color: #e0e0e0 !important;
+
+      &:hover {
+        background-color: #3d3d3d !important;
+        border-color: #4caf50 !important;
+        color: #4caf50 !important;
+      }
+    }
+
+    &.search button {
+      background-color: #2d2d2d !important;
+      border: 3px solid rgba(255, 255, 255, 0.1) !important;
+      color: #e0e0e0 !important;
+      
+      &:hover {
+        background-color: #3d3d3d !important;
+        border-color: #5DCBF0 !important;
+        color: #5DCBF0 !important;
+      }
+    }
+
+    button {
+      background-color: #2d2d2d !important;
+      border: 3px solid rgba(255, 255, 255, 0.1) !important;
+      color: #e0e0e0 !important;
+    }
+  }
+
+  // Footer styling
+  .footer {
+    label {
+      color: #999 !important;
+    }
+
+    .refresh-button {
+      color: #5dcbf0 !important;
+    }
+  }
+
+  // Rate display
+  .rate {
+    color: #999 !important;
+  }
+
+  // Error message
+  .error-message {
+    background: #d32f2f !important;
+  }
+
+  // Loading overlay
+  .loading-overlay {
+    background: rgba(30, 30, 30, 0.9) !important;
+
+    span {
+      color: #5dcbf0 !important;
+    }
+  }
+
+  // Search button styling
+  .button.search button {
+    background-color: #2d2d2d !important;
+    border: 3px solid rgba(255, 255, 255, 0.1) !important;
+    color: #e0e0e0 !important;
+    
+    &:hover {
+      background-color: #3d3d3d !important;
+      border-color: #5DCBF0 !important;
+      color: #5DCBF0 !important;
+    }
+  }
+
+  // Search form dark mode
+  .search-header {
+    h2 {
+      color: #e0e0e0 !important;
+    }
+    
+    .back-button {
+      color: #e0e0e0 !important;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+      }
+    }
+  }
+
+  .search-input-container {
+    background: #2d2d2d !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    
+    &:focus-within {
+      border-color: #5DCBF0 !important;
+    }
+  }
+
+  .search-input {
+    color: #e0e0e0 !important;
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5) !important;
+    }
+  }
+
+  .clear-search-button {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.2) !important;
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+  }
+
+  // Search results dark mode
+  .product-info h3 {
+    color: #e0e0e0 !important;
+  }
+
+  .price-results .price-row {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+    
+    .price {
+      color: #e0e0e0 !important;
+    }
+  }
+
+  .search-footer small {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+
+  .search-loading p {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+}

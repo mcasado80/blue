@@ -1,0 +1,382 @@
+<div class="search-header">
+  <button
+    class="back-button"
+    (click)="flipRequested.emit(); onButtonClick('light')"
+    (keydown.enter)="flipRequested.emit(); onButtonClick('light')"
+    (keydown.space)="flipRequested.emit(); onButtonClick('light')"
+    [attr.aria-label]="translate('search.back')"
+  >
+    <lucide-icon name="circle-arrow-left"></lucide-icon>
+  </button>
+</div>
+
+<form
+  [formGroup]="searchForm"
+  (ngSubmit)="searchProduct()"
+  class="search-form"
+>
+  <div class="search-input-container">
+    <input
+      type="text"
+      formControlName="query"
+      [placeholder]="translate('search.placeholder')"
+      class="search-input"
+      (keypress)="onSearchKeyPress($event)"
+      (focus)="toggleSearchHistory()"
+      (keydown.enter)="onSearchKeyPress($event)"
+      (keydown.space)="onSearchKeyPress($event)"
+      [attr.aria-label]="translate('search.button')"
+    />
+    <button
+      type="button"
+      class="clear-search-button"
+      *ngIf="searchForm.get('query')?.value"
+      (click)="clearSearch()"
+      (keydown.enter)="clearSearch()"
+      (keydown.space)="clearSearch()"
+      [attr.aria-label]="translate('converter.clear')"
+      [title]="translate('converter.clear')"
+    >
+      <lucide-icon name="x"></lucide-icon>
+    </button>
+    <button
+      type="button"
+      class="history-button"
+      (click)="toggleSearchHistory()"
+      (keydown.enter)="toggleSearchHistory()"
+      (keydown.space)="toggleSearchHistory()"
+      [class.active]="showSearchHistory"
+      [attr.aria-label]="translate('search.history')"
+      [title]="translate('search.history')"
+    >
+      <lucide-icon name="history"></lucide-icon>
+    </button>
+    <button
+      type="submit"
+      class="search-button"
+      [disabled]="isSearching"
+      (keydown.enter)="searchProduct()"
+      (keydown.space)="searchProduct()"
+      [attr.aria-label]="translate('search.button')"
+      (click)="onButtonClick('medium')"
+    >
+      <lucide-icon *ngIf="!isSearching" name="search"></lucide-icon>
+      <lucide-icon
+        *ngIf="isSearching"
+        name="loader-2"
+        class="search-spinner animate-spin"
+      ></lucide-icon>
+    </button>
+  </div>
+</form>
+
+<!-- Scrollable content area -->
+<div class="search-content">
+  <!-- Search History and Favorites -->
+  <div
+    class="search-history"
+    *ngIf="showSearchHistory && !searchResult && !isSearching"
+  >
+    <div class="history-header">
+      <h4>{{ translate("search.history") }}</h4>
+      <button
+        type="button"
+        class="clear-history-button"
+        (click)="clearSearchHistory()"
+        (keydown.enter)="clearSearchHistory()"
+        (keydown.space)="clearSearchHistory()"
+        *ngIf="searchHistory.length > 0"
+        [attr.aria-label]="translate('search.clear.history')"
+        [title]="translate('search.clear.history')"
+      >
+        <lucide-icon name="trash-2"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Favorites Section -->
+    <div class="favorites-section" *ngIf="searchFavorites.length > 0">
+      <h5>
+        <lucide-icon name="star" class="section-icon"></lucide-icon>
+        {{ translate("search.favorites") }}
+      </h5>
+      <div class="history-list">
+        <div
+          class="history-item favorite"
+          *ngFor="
+            let favorite of searchFavorites.slice(0, 5);
+            trackBy: trackByFavoriteId
+          "
+          (click)="searchFromHistory(getHistoryItemById(favorite.id))"
+          (keydown.enter)="
+            searchFromHistory(getHistoryItemById(favorite.id))
+          "
+          (keydown.space)="
+            searchFromHistory(getHistoryItemById(favorite.id))
+          "
+          tabindex="0"
+          role="button"
+        >
+          <div class="history-content">
+            <span class="history-query">{{ favorite.displayName }}</span>
+            <span class="history-time">{{
+              getRelativeTime(favorite.timestamp)
+            }}</span>
+          </div>
+          <button
+            type="button"
+            class="favorite-button active"
+            (click)="
+              $event.stopPropagation();
+              toggleFavorite(getHistoryItemById(favorite.id))
+            "
+            (keydown.enter)="
+              $event.stopPropagation();
+              toggleFavorite(getHistoryItemById(favorite.id))
+            "
+            (keydown.space)="
+              $event.stopPropagation();
+              toggleFavorite(getHistoryItemById(favorite.id))
+            "
+            [attr.aria-label]="
+              'Remove from ' + translate('search.favorites')
+            "
+            [title]="'Remove from ' + translate('search.favorites')"
+          >
+            <lucide-icon name="star"></lucide-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent History Section -->
+    <div class="recent-section" *ngIf="searchHistory.length > 0">
+      <h5>
+        <lucide-icon name="clock" class="section-icon"></lucide-icon>
+        Recientes
+      </h5>
+      <div class="history-list">
+        <div
+          class="history-item"
+          *ngFor="
+            let item of searchHistory.slice(0, 8);
+            trackBy: trackByHistoryId
+          "
+          (click)="searchFromHistory(item)"
+          (keydown.enter)="searchFromHistory(item)"
+          (keydown.space)="searchFromHistory(item)"
+          tabindex="0"
+          role="button"
+        >
+          <div class="history-content">
+            <span class="history-query">{{ item.query }}</span>
+            <div class="history-details">
+              <span class="history-product">{{
+                item.result.product
+              }}</span>
+              <span class="history-time">{{
+                getRelativeTime(item.timestamp)
+              }}</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="favorite-button"
+            [class.active]="item.isFavorite"
+            (click)="$event.stopPropagation(); toggleFavorite(item)"
+            (keydown.enter)="
+              $event.stopPropagation(); toggleFavorite(item)
+            "
+            (keydown.space)="
+              $event.stopPropagation(); toggleFavorite(item)
+            "
+            [attr.aria-label]="
+              item.isFavorite
+                ? 'Quitar de favoritos'
+                : 'Agregar a favoritos'
+            "
+            [title]="
+              item.isFavorite
+                ? 'Quitar de favoritos'
+                : 'Agregar a favoritos'
+            "
+          >
+            <lucide-icon
+              [name]="item.isFavorite ? 'star' : 'star'"
+              [class.active]="item.isFavorite"
+            ></lucide-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="history-empty" *ngIf="searchHistory.length === 0">
+      <p>{{ translate("search.no.results") }}</p>
+      <small>{{ translate("search.history") }}</small>
+    </div>
+  </div>
+
+  <!-- Search Results -->
+  <div
+    class="search-results"
+    *ngIf="searchResult"
+    [class.no-results]="searchResult.confidence === 0"
+  >
+    <div class="product-info">
+      <h3>{{ searchResult.product }}</h3>
+      <div
+        class="confidence-badge"
+        [class]="
+          'confidence-' +
+          (searchResult.confidence >= 80
+            ? 'high'
+            : searchResult.confidence >= 60
+            ? 'medium'
+            : 'low')
+        "
+      >
+        {{ searchResult.confidence }}%
+        {{ translate("search.result.confidence") }}
+      </div>
+    </div>
+
+    <div class="price-results" *ngIf="searchResult.confidence > 0">
+      <div
+        class="price-row clickable"
+        *ngFor="let currency of selectedCurrencies"
+        tabindex="0"
+        role="button"
+        (click)="
+          onPriceClick(
+            currency,
+            getSearchResultPrice(searchResult, currency)
+          )
+        "
+        (keydown.enter)="
+          onPriceClick(
+            currency,
+            getSearchResultPrice(searchResult, currency)
+          )
+        "
+        (keydown.space)="
+          onPriceClick(
+            currency,
+            getSearchResultPrice(searchResult, currency)
+          )
+        "
+        [style.display]="
+          getSearchResultPrice(searchResult, currency) > 0
+            ? 'flex'
+            : 'none'
+        "
+      >
+        <img
+          [alt]="getCurrencyInfo(currency).country + ' flag'"
+          height="32"
+          [src]="getCurrencyInfo(currency).flag"
+          role="presentation"
+          loading="lazy"
+          decoding="async"
+          [class.btc-flag]="currency === 'btc'"
+        />
+        <div class="price-container">
+          <span class="price">
+            <ng-container *ngIf="currency === 'btc'">
+              {{ getCurrencyInfo(currency).symbol }}
+              {{
+                getSearchResultPrice(searchResult, currency)
+                  | number : "1.8-8"
+              }}
+            </ng-container>
+            <ng-container *ngIf="currency !== 'btc'">
+              {{ getCurrencyInfo(currency).symbol }}
+              {{
+                getSearchResultPrice(searchResult, currency)
+                  | number : "1.2-2"
+              }}
+            </ng-container>
+          </span>
+
+          <!-- Price difference indicator -->
+          <div
+            class="price-indicators"
+            *ngIf="getPriceDifference(searchResult, currency) !== null"
+          >
+            <span
+              class="price-difference"
+              [class.cheapest]="isCheapestOption(searchResult, currency)"
+              [class.expensive]="
+                getPriceDifference(searchResult, currency)! > 0
+              "
+              *ngIf="!isCheapestOption(searchResult, currency)"
+            >
+              +{{ getPriceDifference(searchResult, currency) }}%
+            </span>
+            <span
+              class="cheapest-badge"
+              *ngIf="isCheapestOption(searchResult, currency)"
+            >
+              <lucide-icon
+                name="trophy"
+                class="trophy-icon"
+              ></lucide-icon>
+              {{ translate("search.cheapest") }}
+            </span>
+
+            <!-- Link icon to external URL -->
+            <button
+              type="button"
+              class="product-link-button"
+              *ngIf="getProductUrl(searchResult, currency)"
+              (click)="
+                $event.stopPropagation();
+                openProductUrl(getProductUrl(searchResult, currency)!)
+              "
+              (keydown.enter)="
+                $event.stopPropagation();
+                openProductUrl(getProductUrl(searchResult, currency)!)
+              "
+              (keydown.space)="
+                $event.stopPropagation();
+                openProductUrl(getProductUrl(searchResult, currency)!)
+              "
+              [attr.aria-label]="'Ver producto en tienda externa'"
+              [title]="'Ver producto en tienda externa'"
+            >
+              <lucide-icon
+                name="external-link"
+                class="link-icon"
+              ></lucide-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="search-footer">
+      <small
+        >{{ searchResult.source }} •
+        {{ searchResult.timestamp | date : "short" }}</small
+      >
+    </div>
+  </div>
+
+  <!-- Loading State with Skeleton -->
+  <div class="search-loading" *ngIf="isSearching">
+    <div class="skeleton-container">
+      <!-- Product title skeleton -->
+      <div class="skeleton-item skeleton-title"></div>
+
+      <!-- Confidence badge skeleton -->
+      <div class="skeleton-item skeleton-badge"></div>
+
+      <!-- Price results skeleton -->
+      <div class="skeleton-prices">
+        <div class="skeleton-price-row" *ngFor="let i of [1, 2, 3]">
+          <div class="skeleton-flag"></div>
+          <div class="skeleton-price-text"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

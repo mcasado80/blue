@@ -1,0 +1,175 @@
+<div class="loading-overlay" *ngIf="isLoading">
+  <div class="spinner"></div>
+  <span>{{ translate("connection.loading") }}</span>
+</div>
+<div class="error-message" *ngIf="error && !isLoading">
+  <span>{{ error }}</span>
+</div>
+<form
+  [formGroup]="blueForm"
+  (ngSubmit)="convert(null)"
+  autocomplete="off"
+  role="form"
+  [attr.aria-label]="translate('converter.title')"
+>
+  <input type="text" autocomplete="off" style="display: none" />
+
+  <!-- Dynamic Currency Inputs -->
+  <div
+    class="input currency-selector"
+    *ngFor="let currency of selectedCurrencies; let i = index"
+  >
+    <div
+      class="flag-container"
+      (click)="toggleCurrency(i, $event)"
+      (keydown.enter)="toggleCurrency(i, $event)"
+      (keydown.space)="toggleCurrency(i, $event)"
+      [title]="
+        'Click to change currency (' +
+        (i + 1) +
+        '/' +
+        availableCurrencies.length +
+        ') - ' +
+        getCurrencyInfo(currency).name
+      "
+      role="button"
+      tabindex="0"
+      [attr.aria-label]="
+        'Change currency from ' +
+        getCurrencyInfo(currency).name +
+        '. Click to cycle through available currencies.'
+      "
+    >
+      <img
+        [alt]="getCurrencyInfo(currency).country + ' flag'"
+        height="48"
+        [src]="getCurrencyInfo(currency).flag"
+        role="presentation"
+        loading="lazy"
+        decoding="async"
+        [class.btc-flag]="currency === 'btc'"
+      />
+      <!-- Currency indicator -->
+      <div
+        class="currency-indicator"
+        [class.btc-indicator]="currency === 'btc'"
+      >
+        {{ getCurrencyInfo(currency).symbol }}
+      </div>
+    </div>
+
+    <div class="input-container">
+      <label [for]="'currency' + (i + 1)" class="sr-only">{{
+        getCurrencyInfo(currency).name
+      }}</label>
+      <input
+        [id]="'currency' + (i + 1)"
+        [formControlName]="'currency' + (i + 1)"
+        type="text"
+        inputmode="decimal"
+        enterkeyhint="done"
+        maxlength="15"
+        [attr.aria-label]="
+          translate('converter.amount.placeholder') +
+          ' - ' +
+          getCurrencyInfo(currency).name
+        "
+        [attr.aria-describedby]="'rate-' + (i + 1)"
+        placeholder="0"
+        (blur)="onInputBlur($event)"
+        (keydown)="onKeyDown($event)"
+        (focus)="onInputFocus($event)"
+        (input)="onInputChange($event)"
+      />
+      <span
+        [id]="'rate-' + (i + 1)"
+        class="rate"
+        *ngIf="
+          getExchangeRate(currency) &&
+          currency !== 'usd' &&
+          currency !== 'btc'
+        "
+        [attr.aria-label]="
+          'Exchange rate: 1 USD = ' +
+          (getExchangeRate(currency) | number : '1.2-2') +
+          ' ' +
+          getCurrencyInfo(currency).symbol
+        "
+        >{{ getExchangeRate(currency) | number : "1.2-2" }}</span
+      >
+    </div>
+  </div>
+  <div
+    class="buttons"
+    role="group"
+    [attr.aria-label]="translate('converter.title') + ' actions'"
+  >
+    <div class="button convert">
+      <button
+        type="submit"
+        (keydown.enter)="convert(null)"
+        (keydown.space)="convert(null)"
+        [attr.aria-label]="translate('converter.convert')"
+        [title]="translate('converter.convert')"
+        (click)="onButtonClick('medium')"
+      >
+        <lucide-icon name="circle-dollar-sign"></lucide-icon>
+      </button>
+    </div>
+    <div class="button search">
+      <button
+        type="button"
+        (click)="flipRequested.emit(); onButtonClick('light')"
+        (keydown.enter)="flipRequested.emit(); onButtonClick('light')"
+        (keydown.space)="flipRequested.emit(); onButtonClick('light')"
+        [attr.aria-label]="translate('converter.search')"
+        [title]="translate('converter.search')"
+      >
+        <lucide-icon name="search"></lucide-icon>
+      </button>
+    </div>
+    <div class="button clear">
+      <button
+        type="button"
+        (click)="this.blueForm.reset(); onButtonClick('light')"
+        (keydown.enter)="this.blueForm.reset(); onButtonClick('light')"
+        (keydown.space)="this.blueForm.reset(); onButtonClick('light')"
+        [attr.aria-label]="translate('converter.clear')"
+        [title]="translate('converter.clear')"
+      >
+        <lucide-icon name="trash-2"></lucide-icon>
+      </button>
+    </div>
+  </div>
+</form>
+<div class="footer" role="contentinfo">
+  <label [for]="'last-update'" aria-live="polite">
+    {{ translate("connection.last.update") }}:
+    <time
+      id="last-update"
+      [attr.datetime]="lastUpdate | date : 'yyyy-MM-ddTHH:mm:ss'"
+    >
+      {{ lastUpdate | date : "dd/MM/yy HH:mm:ss" }}
+    </time>
+  </label>
+  <button
+    type="button"
+    class="refresh-button"
+    (click)="refreshRequested.emit(); onButtonClick('light')"
+    (keydown.enter)="refreshRequested.emit(); onButtonClick('light')"
+    (keydown.space)="refreshRequested.emit(); onButtonClick('light')"
+    [class.disabled]="isLoading"
+    [disabled]="isLoading"
+    [attr.aria-label]="
+      isLoading
+        ? translate('connection.refreshing')
+        : translate('connection.update')
+    "
+  >
+    {{
+      isLoading
+        ? translate("connection.refreshing")
+        : translate("connection.update")
+    }}
+  </button>
+</div>

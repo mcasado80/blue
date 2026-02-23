@@ -1,0 +1,87 @@
+<app-toast></app-toast>
+<!-- Header Controls -->
+<div class="header-controls">
+  <!-- Connectivity Status - Only show when offline or using defaults -->
+  <div
+    class="connectivity-indicator"
+    [class.offline]="!isOnline"
+    [class.using-defaults]="isUsingDefaultRates()"
+    [attr.aria-label]="getConnectionStatusText()"
+    [title]="getDetailedConnectionStatus()"
+    *ngIf="!isOnline || isUsingDefaultRates()"
+  >
+    <lucide-icon [name]="getWifiIcon()" class="wifi-icon"></lucide-icon>
+  </div>
+
+  <!-- Language Selector -->
+  <button
+    class="language-toggle"
+    (click)="toggleLanguage()"
+    (keydown.enter)="toggleLanguage()"
+    (keydown.space)="toggleLanguage()"
+    [attr.aria-label]="
+      'Change language to ' +
+      translationService.getLanguageName(
+        languages[(languages.indexOf(currentLanguage) + 1) % languages.length]
+      )
+    "
+  >
+    <img
+      [src]="getCurrentFlag()"
+      alt="{{ currentLanguage }}"
+      width="24"
+      height="24"
+      loading="lazy"
+      decoding="async"
+    />
+  </button>
+
+  <!-- Theme Toggle -->
+  <button
+    class="theme-toggle"
+    (click)="toggleDarkMode(); onButtonClick('light')"
+    (keydown.enter)="toggleDarkMode(); onButtonClick('light')"
+    (keydown.space)="toggleDarkMode(); onButtonClick('light')"
+    [attr.aria-label]="
+      isDarkMode ? translate('theme.light') : translate('theme.dark')
+    "
+  >
+    <lucide-icon *ngIf="!isDarkMode" name="moon"></lucide-icon>
+    <lucide-icon *ngIf="isDarkMode" name="sun"></lucide-icon>
+  </button>
+</div>
+<main id="main-content" class="materialContainer" role="main">
+  <div
+    class="flip-container"
+    [class.flipped]="isFlipped"
+    (touchstart)="onTouchStart($event)"
+    (touchend)="onTouchEnd($event)"
+  >
+    <!-- Front side - Currency Converter -->
+    <div class="box front" [class.loading]="isLoading">
+      <app-currency-converter
+        [exchangeRates]="exchangeRates"
+        [lastUpdate]="lastUpdate"
+        [isLoading]="isLoading"
+        [isOnline]="isOnline"
+        [isActive]="!isFlipped"
+        [incomingPrice]="selectedPrice"
+        (flipRequested)="toggleFlip()"
+        (refreshRequested)="forceRefreshRates()"
+        (selectedCurrenciesChange)="converterCurrencies = $event"
+      ></app-currency-converter>
+    </div>
+
+    <!-- Back side - Product Search -->
+    <div class="box back">
+      <app-product-search
+        [selectedCurrencies]="converterCurrencies"
+        [exchangeRates]="exchangeRates"
+        [isOnline]="isOnline"
+        [isActive]="isFlipped"
+        (flipRequested)="toggleFlip()"
+        (priceSelected)="onPriceSelected($event)"
+      ></app-product-search>
+    </div>
+  </div>
+</main>
